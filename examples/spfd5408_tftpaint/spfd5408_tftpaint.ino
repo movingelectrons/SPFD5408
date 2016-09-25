@@ -1,53 +1,11 @@
-// Paint example specifically for the TFTLCD breakout board.
-// If using the Arduino shield, use the tftpaint_shield.pde sketch instead!
-// DOES NOT CURRENTLY WORK ON ARDUINO LEONARDO
-
-// Modified for SPFD5408 Library by Joao Lopes
-// Version 0.9.2 - Rotation for Mega
-
-// *** SPFD5408 change -- Begin
 #include <SPFD5408_Adafruit_GFX.h>    // Core graphics library
 #include <SPFD5408_Adafruit_TFTLCD.h> // Hardware-specific library
 #include <SPFD5408_TouchScreen.h>
-// *** SPFD5408 change -- End
 
 #if defined(__SAM3X8E__)
     #undef __FlashStringHelper::F(string_literal)
     #define F(string_literal) string_literal
 #endif
-
-// When using the BREAKOUT BOARD only, use these 8 data lines to the LCD:
-// For the Arduino Uno, Duemilanove, Diecimila, etc.:
-//   D0 connects to digital pin 8  (Notice these are
-//   D1 connects to digital pin 9   NOT in order!)
-//   D2 connects to digital pin 2
-//   D3 connects to digital pin 3
-//   D4 connects to digital pin 4
-//   D5 connects to digital pin 5
-//   D6 connects to digital pin 6
-//   D7 connects to digital pin 7
-
-// For the Arduino Mega, use digital pins 22 through 29
-// (on the 2-row header at the end of the board).
-//   D0 connects to digital pin 22
-//   D1 connects to digital pin 23
-//   D2 connects to digital pin 24
-//   D3 connects to digital pin 25
-//   D4 connects to digital pin 26
-//   D5 connects to digital pin 27
-//   D6 connects to digital pin 28
-//   D7 connects to digital pin 29
-
-// For the Arduino Due, use digital pins 33 through 40
-// (on the 2-row header at the end of the board).
-//   D0 connects to digital pin 33
-//   D1 connects to digital pin 34
-//   D2 connects to digital pin 35
-//   D3 connects to digital pin 36
-//   D4 connects to digital pin 37
-//   D5 connects to digital pin 38
-//   D6 connects to digital pin 39
-//   D7 connects to digital pin 40
 
 #define YP A1  // must be an analog pin, use "An" notation!
 #define XM A2  // must be an analog pin, use "An" notation!
@@ -130,40 +88,29 @@ void setup(void) {
 
   tft.begin(0x9341); // SDFP5408
 
-  tft.setRotation(0); // Need for the Mega, please changed for your choice or rotation initial
+  tft.setRotation(1); // Need for the Mega
 
   // Border
-
   drawBorder();
   
   // Initial screen
-  
-  tft.setCursor (55, 50);
+  tft.setCursor (15, 50);
   tft.setTextSize (3);
   tft.setTextColor(RED);
-  tft.println("SPFD5408");
-  tft.setCursor (65, 85);
-  tft.println("Library");
-  tft.setCursor (55, 150);
-  tft.setTextSize (2);
-  tft.setTextColor(BLACK);
-  tft.println("TFT Paint");
-
-  tft.setCursor (80, 250);
+  tft.println("SPFD5408 Library");
+  tft.setCursor (55, 80);
   tft.setTextSize (1);
+  tft.setTextColor(BLACK);
+  tft.println("TFT Paint Example");
+  tft.setCursor (55, 130);
+  tft.setTextSize (2);
   tft.setTextColor(BLACK);
   tft.println("Touch to proceed");
 
   // Wait touch
-
   waitOneTouch();
 
-// *** SPFD5408 change -- End
-
-  // -- End
-
   // Paint
-  
   tft.fillScreen(BLACK);
 
   tft.fillRect(0, 0, BOXSIZE, BOXSIZE, RED);
@@ -183,8 +130,7 @@ void setup(void) {
 #define MINPRESSURE 10
 #define MAXPRESSURE 1000
 
-void loop()
-{
+void loop(){
   digitalWrite(13, HIGH);
   TSPoint p = ts.getPoint();
   digitalWrite(13, LOW);
@@ -197,26 +143,19 @@ void loop()
 
   // we have some minimum pressure we consider 'valid'
   // pressure of 0 means no pressing!
-
   if (p.z > MINPRESSURE && p.z < MAXPRESSURE) {
     /*
     Serial.print("X = "); Serial.print(p.x);
     Serial.print("\tY = "); Serial.print(p.y);
     Serial.print("\tPressure = "); Serial.println(p.z);
     */
-    
     if (p.y < (TS_MINY-5)) {
       Serial.println("erase");
       // press the bottom of the screen to erase 
       tft.fillRect(0, BOXSIZE, tft.width(), tft.height()-BOXSIZE, BLACK);
     }
     // scale from 0->1023 to tft.width
-
-    // *** SPFD5408 change -- Begin
-    // Bug in in original code
-    //p.x = map(p.y, TS_MINY, TS_MAXY, 0, tft.height());
     p.x = map(p.x, TS_MINX, TS_MAXX, 0, tft.width());
-    // *** SPFD5408 change -- End
     p.y = map(p.y, TS_MINY, TS_MAXY, 0, tft.height());;
 
     /*
@@ -226,7 +165,6 @@ void loop()
     */
     if (p.y < BOXSIZE) {
        oldcolor = currentcolor;
-
        if (p.x < BOXSIZE) { 
          currentcolor = RED; 
          tft.drawRect(0, 0, BOXSIZE, BOXSIZE, WHITE);
@@ -246,7 +184,6 @@ void loop()
          currentcolor = MAGENTA;
          tft.drawRect(BOXSIZE*5, 0, BOXSIZE, BOXSIZE, WHITE);
        }
-
        if (oldcolor != currentcolor) {
           if (oldcolor == RED) tft.fillRect(0, 0, BOXSIZE, BOXSIZE, RED);
           if (oldcolor == YELLOW) tft.fillRect(BOXSIZE, 0, BOXSIZE, BOXSIZE, YELLOW);
@@ -263,36 +200,23 @@ void loop()
 }
 
 // Wait one touch
-
 TSPoint waitOneTouch() {
-
   // wait 1 touch to exit function
-  
   TSPoint p;
-  
   do {
     p= ts.getPoint(); 
-  
     pinMode(XM, OUTPUT); //Pins configures again for TFT control
     pinMode(YP, OUTPUT);
-  
   } while((p.z < MINPRESSURE )|| (p.z > MAXPRESSURE));
-  
   return p;
 }
 
-
 void drawBorder () {
-
-  // Draw a border
-
   uint16_t width = tft.width() - 1;
   uint16_t height = tft.height() - 1;
   uint8_t border = 10;
 
   tft.fillScreen(RED);
   tft.fillRect(border, border, (width - border * 2), (height - border * 2), WHITE);
-  
 }
-
 

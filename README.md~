@@ -90,6 +90,18 @@ If you download any code that uses Adafruit Libraries, please verify it:
 	
 	(please verify it if the point of touch is not accurate)
 
+--------------------------------
+
+All changes in Adafruit code is marked with:
+
+
+  // ### SPFD5408 change -- Begin
+
+  (change)
+
+  // ### SPFD5408 change -- End
+
+  This is useful if You see the points that be workeds for any touble
   
 --------------------------------
 

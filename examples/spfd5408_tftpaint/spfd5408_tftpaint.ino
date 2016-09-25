@@ -58,39 +58,9 @@ void setup(void) {
   Serial.println(F("Paint!"));
   
   tft.reset();
-
-  // *** SPFD5408 change -- Begin
-//  uint16_t identifier = tft.readID();
-//
-//  if(identifier == 0x9325) {
-//    Serial.println(F("Found ILI9325 LCD driver"));
-//  } else if(identifier == 0x9328) {
-//    Serial.println(F("Found ILI9328 LCD driver"));
-//  } else if(identifier == 0x7575) {
-//    Serial.println(F("Found HX8347G LCD driver"));
-//  } else if(identifier == 0x9341) {
-//    Serial.println(F("Found ILI9341 LCD driver"));
-//  } else if(identifier == 0x8357) {
-//    Serial.println(F("Found HX8357D LCD driver"));
-//  } else {
-//    Serial.print(F("Unknown LCD driver chip: "));
-//    Serial.println(identifier, HEX);
-//    Serial.println(F("If using the Adafruit 2.8\" TFT Arduino shield, the line:"));
-//    Serial.println(F("  #define USE_ADAFRUIT_SHIELD_PINOUT"));
-//    Serial.println(F("should appear in the library header (Adafruit_TFT.h)."));
-//    Serial.println(F("If using the breakout board, it should NOT be #defined!"));
-//    Serial.println(F("Also if using the breakout, double-check that all wiring"));
-//    Serial.println(F("matches the tutorial."));
-//    return;
-//  }
-//
-//  tft.begin(identifier);
-
   tft.begin(0x9341); // SDFP5408
-
   tft.setRotation(1); // Need for the Mega
 
-  // Border
   drawBorder();
   
   // Initial screen
@@ -101,11 +71,13 @@ void setup(void) {
   tft.setCursor (55, 80);
   tft.setTextSize (1);
   tft.setTextColor(BLACK);
-  tft.println("TFT Paint Example");
+  tft.println("TFT Paint Example for Arduino Mega");
   tft.setCursor (55, 130);
   tft.setTextSize (2);
   tft.setTextColor(BLACK);
-  tft.println("Touch to proceed");
+  tft.println("Touch anywhere");
+  tft.setCursor (55, 150);
+  tft.println("to proceed");
 
   // Wait touch
   waitOneTouch();
